@@ -9,6 +9,10 @@ public interface Storable<T extends Storable> extends HasId {
     }
 
     default Storable<T> get() {
-        return StorageFactory.getStorage().get(this.getId().get());
+        return StorageFactory.getStorage().get(this.getId());
+    }
+
+    default void drop() {
+        StorageFactory.getStorage().drop(this.getId());
     }
 }

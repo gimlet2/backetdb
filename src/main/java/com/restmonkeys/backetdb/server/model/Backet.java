@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Backet implements Serializable, Validatable {
-    private Optional<Long> id;
+    private Optional<Long> id = Optional.empty();
     private List<JsonObject> items = new ArrayList<>();
 
     public Backet(Long id) {
@@ -28,6 +28,9 @@ public class Backet implements Serializable, Validatable {
 
     @Override
     public Optional<Long> getId() {
+        if (id == null) {
+            id = Optional.empty();
+        }
         return id;
     }
 
@@ -37,12 +40,15 @@ public class Backet implements Serializable, Validatable {
     }
 
     public Backet addItem(JsonObject item) {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
         items.add(item);
         return this;
     }
 
     @Override
-    public Storable validate() throws ValidationException {
+    public Backet validate() throws ValidationException {
         return this;
     }
 }

@@ -2,15 +2,19 @@ package com.restmonkeys.backetdb.server;
 
 import com.google.gson.JsonParser;
 import com.restmonkeys.backetdb.server.model.Backet;
+import com.restmonkeys.backetdb.server.storage.StorageFactory;
+import spark.Request;
 import spark.Response;
 
 import static spark.Spark.delete;
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
 public class Application {
 
     public static final String APPLICATION_JSON = "application/json";
+    public static final int CREATED = 201;
 
     public Application() {
         init();
@@ -20,11 +24,11 @@ public class Application {
         JsonTransformer<Backet> bucketTransformer = new JsonTransformer<>();
 
         /**
-         *  Get list of all backets
+         *  Get list of all backet ids
          */
         get("/", (req, res) -> {
             setCommonResponseHeaders(res);
-            return "";
+            return StorageFactory.getStorage().ids();
         }, bucketTransformer);
 
         /**
@@ -32,7 +36,7 @@ public class Application {
          */
         get("/:id", (req, res) -> {
             setCommonResponseHeaders(res);
-            return new Backet(req.params(":id")).get();
+            return new Backet(id(req)).get();
         }, bucketTransformer);
 
         /**
@@ -48,6 +52,7 @@ public class Application {
          */
         post("/", APPLICATION_JSON, (req, res) -> {
             setCommonResponseHeaders(res);
+            res.status(CREATED);
             return bucketTransformer.unmarshal(req.body(), Backet.class)
                     .validate()
                     .save();
@@ -58,7 +63,7 @@ public class Application {
          */
         post("/:id/item", APPLICATION_JSON, (req, res) -> {
             setCommonResponseHeaders(res);
-            return new Backet(req.params(":id")).get()
+            return new Backet(id(req)).get()
                     .addItem(new JsonParser().parse(req.body()).getAsJsonObject())
                     .save();
         }, bucketTransformer);
@@ -68,9 +73,19 @@ public class Application {
          */
         delete("/:id", (req, res) -> {
             setCommonResponseHeaders(res);
+            new Backet(id(req)).drop();
             return "";
         }, bucketTransformer);
 
+        exception(Exception.class, (e, request, response) -> {
+            response.status(500);
+            response.body("Something bad happened" + e);
+        });
+
+    }
+
+    private String id(Request req) {
+        return req.params(":id");
     }
 
     private void setCommonResponseHeaders(Response res) {

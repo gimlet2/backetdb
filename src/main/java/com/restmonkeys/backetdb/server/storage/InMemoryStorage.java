@@ -1,10 +1,13 @@
 package com.restmonkeys.backetdb.server.storage;
 
+import com.restmonkeys.backetdb.server.exceptions.OperationForbidden;
 import com.restmonkeys.backetdb.server.model.Storable;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class InMemoryStorage implements Storage {
@@ -34,9 +37,20 @@ public class InMemoryStorage implements Storage {
     }
 
     @Override
-    public <T extends Storable> Storable<T> get(Long id) {
+    public <T extends Storable> Storable<T> get(Optional<Long> id) {
         //noinspection unchecked
-        return (Storable<T>) map.get(id);
+        return (Storable<T>) map.get(id.orElseThrow(OperationForbidden::new));
     }
 
+    @Override
+    public void drop(Optional<Long> id) {
+        if (id.isPresent()) {
+            map.remove(id.get());
+        }
+    }
+
+    @Override
+    public Set<Long> ids() {
+        return map.keySet();
+    }
 }
