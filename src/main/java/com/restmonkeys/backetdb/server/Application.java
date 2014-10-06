@@ -1,6 +1,12 @@
 package com.restmonkeys.backetdb.server;
 
-import static spark.Spark.*;
+import com.google.gson.JsonParser;
+import com.restmonkeys.backetdb.server.model.Backet;
+import spark.Response;
+
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 public class Application {
 
@@ -11,56 +17,64 @@ public class Application {
     }
 
     private void init() {
+        JsonTransformer<Backet> bucketTransformer = new JsonTransformer<>();
 
         /**
          *  Get list of all backets
          */
-        JsonTransformer transformer = new JsonTransformer();
         get("/", (req, res) -> {
-            res.type(APPLICATION_JSON);
-            return "Hello";
-        }, transformer);
+            setCommonResponseHeaders(res);
+            return "";
+        }, bucketTransformer);
 
         /**
          * Get bucket by id
          */
         get("/:id", (req, res) -> {
-            res.type(APPLICATION_JSON);
-            return "";
-        }, transformer);
+            setCommonResponseHeaders(res);
+            return new Backet(req.params(":id")).get();
+        }, bucketTransformer);
 
         /**
          * Get aggregates results for bucket
          */
         get("/:id/aggregates", (req, res) -> {
-            res.type(APPLICATION_JSON);
+            setCommonResponseHeaders(res);
             return "";
-        }, transformer);
+        }, bucketTransformer);
 
         /**
          * Create backet
          */
         post("/", APPLICATION_JSON, (req, res) -> {
-            res.type(APPLICATION_JSON);
-            return "";
-        }, transformer);
+            setCommonResponseHeaders(res);
+            return bucketTransformer.unmarshal(req.body(), Backet.class)
+                    .validate()
+                    .save();
+        }, bucketTransformer);
 
         /**
          * Add backet member
          */
         post("/:id/item", APPLICATION_JSON, (req, res) -> {
-            res.type(APPLICATION_JSON);
-            return "";
-        }, transformer);
+            setCommonResponseHeaders(res);
+            return new Backet(req.params(":id")).get()
+                    .addItem(new JsonParser().parse(req.body()).getAsJsonObject())
+                    .save();
+        }, bucketTransformer);
 
         /**
          * Drop backet
          */
         delete("/:id", (req, res) -> {
-            res.type(APPLICATION_JSON);
+            setCommonResponseHeaders(res);
             return "";
-        }, transformer);
+        }, bucketTransformer);
 
+    }
+
+    private void setCommonResponseHeaders(Response res) {
+        res.type(APPLICATION_JSON);
     }
 
 }
