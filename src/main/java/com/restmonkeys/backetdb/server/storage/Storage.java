@@ -13,4 +13,6 @@ public interface Storage {
     void drop(Optional<Long> id);
 
     Set<Long> ids();
+
+    void syncToDisk();
 }

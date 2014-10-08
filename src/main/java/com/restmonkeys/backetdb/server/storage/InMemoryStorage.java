@@ -3,6 +3,8 @@ package com.restmonkeys.backetdb.server.storage;
 import com.restmonkeys.backetdb.server.exceptions.OperationForbidden;
 import com.restmonkeys.backetdb.server.model.Storable;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,5 +54,17 @@ public class InMemoryStorage implements Storage {
     @Override
     public Set<Long> ids() {
         return map.keySet();
+    }
+
+    @Override
+    public void syncToDisk() {
+        try {
+            FileOutputStream fos = new FileOutputStream("map.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(map);
+            oos.close();
+        } catch (Exception e) {
+            // Nothing to do with it.
+        }
     }
 }
