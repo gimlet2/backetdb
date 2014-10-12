@@ -9,7 +9,7 @@ public class JsonTransformer<T> implements ResponseTransformer {
 
     @Override
     public String render(Object model) {
-        return gson.toJson(model);
+        return model.toString();
     }
 
     public T unmarshal(String st, Class<T> clazz) {
