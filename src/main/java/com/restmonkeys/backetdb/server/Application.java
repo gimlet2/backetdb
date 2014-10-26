@@ -1,6 +1,5 @@
 package com.restmonkeys.backetdb.server;
 
-import com.google.gson.JsonParser;
 import com.restmonkeys.backetdb.server.model.Backet;
 import com.restmonkeys.backetdb.server.storage.StorageFactory;
 import spark.Request;
@@ -64,7 +63,7 @@ public class Application {
         post("/:id/item", APPLICATION_JSON, (req, res) -> {
             setCommonResponseHeaders(res);
             return new Backet(id(req)).get()
-                    .addItem(new JsonParser().parse(req.body()).getAsJsonObject())
+                    .addItem(req.body())
                     .save();
         }, bucketTransformer);
 
@@ -80,6 +79,7 @@ public class Application {
         exception(Exception.class, (e, request, response) -> {
             response.status(500);
             response.body("Something bad happened" + e);
+            e.printStackTrace();
         });
 
     }
