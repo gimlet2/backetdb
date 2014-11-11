@@ -24,6 +24,9 @@ public class Backet implements Serializable, Validatable {
     private List<Function> aggregates = new ArrayList<>();
     private Map<String, Object> results = new HashMap<>();
 
+    public Backet() {
+    }
+
     public Backet(Long id) {
         this.id = id;
     }
