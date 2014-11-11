@@ -1,6 +1,8 @@
 BacketDB
 ========
 
+[ ![Codeship Status for gimlet2/backetdb](https://codeship.com/projects/bee7a570-4c22-0132-c636-4271b409cf9f/status)](https://codeship.com/projects/46985)
+
 BacketDB is database that provide powerfull mechanism to manage collections of objects. 
 It is accessiable through REST api.
 
