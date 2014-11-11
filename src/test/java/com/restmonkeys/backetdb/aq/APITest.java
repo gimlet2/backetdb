@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.testng.Assert.assertNotNull;
 
 public class APITest {
 
@@ -38,5 +39,19 @@ public class APITest {
 
         // versify
         assertThat(allBackets.size(), is(0));
+    }
+
+    @Test
+    public void createOneBacket() {
+        // setup
+
+        // act
+        Backet result = client.createBacket();
+
+        // verify
+        assertNotNull(result);
+        List<Backet> allBackets = client.getAllBackets();
+        assertThat(allBackets.size(), is(1));
+        assertThat(allBackets.get(0).getId().get(), is(result.getId().get()));
     }
 }

@@ -1,10 +1,13 @@
 package com.restmonkeys.backetdb.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.google.gson.Gson;
+import com.restmonkeys.backetdb.server.Application;
 import com.restmonkeys.backetdb.server.model.Backet;
 import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -42,6 +45,11 @@ public class BacketClient {
         GenericType<List<Backet>> genericType = new GenericType<List<Backet>>() {
         };
         return response.readEntity(genericType);
+    }
+
+    public Backet createBacket() {
+        return new Gson().fromJson(http.path("/").request(Application.APPLICATION_JSON)
+                .post(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE)).readEntity(String.class), Backet.class);
     }
 
     public void deleteBacket(Long id) {
