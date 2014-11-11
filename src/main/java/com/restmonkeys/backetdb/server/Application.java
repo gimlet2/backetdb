@@ -9,6 +9,7 @@ import static spark.Spark.delete;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static spark.SparkBase.setPort;
 
 public class Application {
 
@@ -20,6 +21,11 @@ public class Application {
     }
 
     private void init() {
+        String port = System.getProperty("port");
+        if (port != null) {
+            setPort(Integer.parseInt(port));
+        }
+
         JsonTransformer<Backet> bucketTransformer = new JsonTransformer<>();
 
         /**
