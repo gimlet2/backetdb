@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class Backet implements Serializable, Validatable {
     private static final long serialVersionUID = -6751168190572034259L;
     private Long id;
-    private List<String> items = new ArrayList<>();
+    private List<String> items = Collections.synchronizedList(new ArrayList<>());
     private Function uniqueScript = new Function();
     private List<Function> aggregates = new ArrayList<>();
     private Map<String, Object> results = new HashMap<>();
@@ -105,5 +106,9 @@ public class Backet implements Serializable, Validatable {
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.append("]").toString();
+    }
+
+    public List<String> getItems() {
+        return items;
     }
 }
