@@ -9,10 +9,12 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 public class APITest {
 
@@ -53,5 +55,48 @@ public class APITest {
         List<Backet> allBackets = client.getAllBackets();
         assertThat(allBackets.size(), is(1));
         assertThat(allBackets.get(0).getId().get(), is(result.getId().get()));
+    }
+
+    @Test
+    public void addItemToBacket() {
+        // setup
+        Backet backet = client.createBacket();
+        String item = "hello";
+
+        // act
+        Backet result = client.addItem(backet, item);
+
+        // verify
+        assertThat(result.getItems().size(), is(1));
+        assertThat(result.getItems().get(0), is(item));
+    }
+
+    @Test
+    public void massAddItemsToBacket() {
+        // setup
+        Backet backet = client.createBacket();
+        String item = "hello";
+        int count = 1000;
+
+        // act
+        IntStream.rangeClosed(1, count).parallel().forEach(i -> client.addItem(backet, item + i));
+
+        Backet result = client.getBacket(backet.getId().get());
+
+        // verify
+        assertThat(result.getItems().size(), is(count));
+        assertTrue(result.getItems().contains(item + 1));
+    }
+
+    @Test
+    public void massBacketCreation() throws Exception {
+        // setup
+        int count = 1000;
+        // act
+        IntStream.rangeClosed(1, count).parallel().forEach(i -> client.createBacket());
+
+        // verify
+        List<Backet> allBackets = client.getAllBackets();
+        assertThat(allBackets.size(), is(count));
     }
 }

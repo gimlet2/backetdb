@@ -52,6 +52,19 @@ public class BacketClient {
                 .post(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE)).readEntity(String.class), Backet.class);
     }
 
+    public Backet getBacket(Long id) {
+        WebTarget path = http.path("/").path(id.toString());
+        Response response = path.request().accept(MediaType.APPLICATION_JSON).get();
+        return new Gson().fromJson(response.readEntity(String.class), Backet.class);
+    }
+
+
+    public Backet addItem(Backet backet, String item) {
+        String json = http.path("/").path(backet.getId().get().toString()).path("item").request(Application.APPLICATION_JSON)
+                .post(Entity.entity(item, MediaType.APPLICATION_JSON_TYPE)).readEntity(String.class);
+        return new Gson().fromJson(json, Backet.class);
+    }
+
     public void deleteBacket(Long id) {
         http.path("/").path(id.toString()).request().delete();
     }
