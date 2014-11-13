@@ -85,15 +85,17 @@ public class Backet implements Serializable, Validatable {
             items.forEach(e -> itemsArray.add(jsonParser.parse(e)));
         }
         jsonObject.add("items", itemsArray);
-        JsonArray resultsArray = new JsonArray();
-        if (results != null) {
-            results.forEach((k, v) -> {
-                JsonObject element = new JsonObject();
-                element.addProperty(k, v.toString());
-                resultsArray.add(element);
-            });
-        }
-        jsonObject.add("results", resultsArray);
+//        JsonArray resultsArray = new JsonArray();
+//        if (results != null) {
+//            results.forEach(A -> {
+//                JsonParser jsonParser = new JsonParser();
+//
+//                JsonObject element = new JsonObject();
+//                element.add(jsonParser.parse(A));
+//                resultsArray.add(element);
+//            });
+//        }
+        jsonObject.add("results", new JsonParser().parse(new Gson().toJson(results)));
         return jsonObject.toString();
     }
 
@@ -110,5 +112,9 @@ public class Backet implements Serializable, Validatable {
 
     public List<String> getItems() {
         return items;
+    }
+
+    public Map<String, Object> getResults() {
+        return results;
     }
 }

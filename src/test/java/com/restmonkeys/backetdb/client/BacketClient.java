@@ -48,8 +48,12 @@ public class BacketClient {
     }
 
     public Backet createBacket() {
+        return createBacket("{}");
+    }
+
+    public Backet createBacket(String entity) {
         return new Gson().fromJson(http.path("/").request(Application.APPLICATION_JSON)
-                .post(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE)).readEntity(String.class), Backet.class);
+                .post(Entity.entity(entity, MediaType.APPLICATION_JSON_TYPE)).readEntity(String.class), Backet.class);
     }
 
     public Backet getBacket(Long id) {

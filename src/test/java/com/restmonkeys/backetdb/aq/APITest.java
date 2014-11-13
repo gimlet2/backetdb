@@ -99,4 +99,45 @@ public class APITest {
         List<Backet> allBackets = client.getAllBackets();
         assertThat(allBackets.size(), is(count));
     }
+
+    @Test
+    public void sumNumbers() {
+        // setup
+        IntStream range = IntStream.range(1, 5);
+        double sum = range.sum();
+
+        Backet backet = client.createBacket("{" +
+                "  \"aggregates\": [ {" +
+                "    \"name\": \"sum\"," +
+                "    \"code\": \"var sum = function(list) { var result = 0;for(var i = 0; i< list.length; i++)result+=list[i]; return result;}\"}]" +
+                "}");
+
+        // act
+        IntStream.range(1, 5).forEach(i -> client.addItem(backet, String.valueOf(i)));
+        Backet result = client.getBacket(backet.getId().get());
+
+        // verify
+        assertThat(result.getResults().size(), is(1));
+        assertThat(result.getResults().get("sum"), is(sum));
+    }
+
+    @Test
+    public void findMaximum() {
+        // setup
+        IntStream range = IntStream.range(1, 5);
+        int max = range.max().getAsInt();
+        Backet backet = client.createBacket("{" +
+                "  \"aggregates\": [ {" +
+                "    \"name\": \"max\"," +
+                "    \"code\": \"var max = function(list) { return Math.max.apply(null, list)}\"}]" +
+                "}");
+
+        // act
+        IntStream.range(1, 5).forEach(i -> client.addItem(backet, String.valueOf(i)));
+        Backet result = client.getBacket(backet.getId().get());
+
+        // verify
+        assertThat(result.getResults().size(), is(1));
+        assertThat(((Double) result.getResults().get("max")).intValue(), is(max));
+    }
 }
