@@ -3,6 +3,7 @@ package com.restmonkeys.backetdb.aq;
 import com.restmonkeys.backetdb.client.BacketClient;
 import com.restmonkeys.backetdb.server.Application;
 import com.restmonkeys.backetdb.server.model.Backet;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
@@ -22,12 +23,14 @@ public class APITest {
     private BacketClient client;
 
     @BeforeSuite
+    @BeforeGroups(groups = "load")
     public void runServer() {
         application = new Application();
         client = BacketClient.client();
     }
 
     @BeforeMethod
+    @BeforeGroups(groups = "load")
     public void clearServer() {
         client.getAllBackets().parallelStream().map(Backet::getId).map(Optional::get).forEach(client::deleteBacket);
     }
@@ -114,6 +117,50 @@ public class APITest {
 
         // act
         IntStream.range(1, 5).forEach(i -> client.addItem(backet, String.valueOf(i)));
+        Backet result = client.getBacket(backet.getId().get());
+
+        // verify
+        assertThat(result.getResults().size(), is(1));
+        assertThat(result.getResults().get("sum"), is(sum));
+    }
+
+    @Test(groups = "load")
+    public void sumLotOfNumbers_withReusingPreviousResults() {
+        // setup
+        int count = 1000;
+        IntStream range = IntStream.range(1, count);
+        double sum = range.sum();
+
+        Backet backet = client.createBacket("{" +
+                "  \"aggregates\": [ {" +
+                "    \"name\": \"sum\"," +
+                "    \"code\": \"var sum = function(list, prevRes, newItem) { return +prevRes + +newItem;}\"}]" +
+                "}");
+
+        // act
+        IntStream.range(1, count).parallel().forEach(i -> client.addItem(backet, String.valueOf(i)));
+        Backet result = client.getBacket(backet.getId().get());
+
+        // verify
+        assertThat(result.getResults().size(), is(1));
+        assertThat(result.getResults().get("sum"), is(sum));
+    }
+
+    @Test(groups = "load")
+    public void sumLotOfNumbers_withoutReusingPreviousResults() {
+        // setup
+        int count = 1000;
+        IntStream range = IntStream.range(1, count);
+        double sum = range.sum();
+
+        Backet backet = client.createBacket("{" +
+                "  \"aggregates\": [ {" +
+                "    \"name\": \"sum\"," +
+                "    \"code\": \"var sum = function(list) { var result = 0;for(var i = 0; i< list.length; i++)result+=list[i]; return result;}\"}]" +
+                "}");
+
+        // act
+        IntStream.range(1, count).parallel().forEach(i -> client.addItem(backet, String.valueOf(i)));
         Backet result = client.getBacket(backet.getId().get());
 
         // verify

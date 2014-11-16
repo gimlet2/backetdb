@@ -23,7 +23,7 @@ public class Backet implements Serializable, Validatable {
     private List<String> items = Collections.synchronizedList(new ArrayList<>());
     private Function uniqueScript = new Function();
     private List<Function> aggregates = new ArrayList<>();
-    private Map<String, Object> results = new HashMap<>();
+    private Map<String, Object> results = Collections.synchronizedMap(new HashMap<>());
 
     public Backet() {
     }
@@ -54,7 +54,7 @@ public class Backet implements Serializable, Validatable {
         this.id = id;
     }
 
-    public Backet addItem(String item) {
+    public synchronized Backet addItem(String item) {
         if (items == null) {
             items = new ArrayList<>();
         }
@@ -64,7 +64,11 @@ public class Backet implements Serializable, Validatable {
         items.add(item);
 
         Eval eval = EvalFactory.getEval();
-        aggregates.forEach((f) -> results.put(f.getName(), eval.eval(f, new Gson().fromJson(join(items), ArrayList.class))));
+        Gson gson = new Gson();
+        aggregates.forEach((f) -> {
+            Object prev = results.get(f.getName());
+            results.put(f.getName(), eval.eval(f, gson.fromJson(join(items), ArrayList.class), prev, item));
+        });
         return this;
     }
 
