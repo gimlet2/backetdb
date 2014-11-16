@@ -6,6 +6,8 @@ BacketDB
 BacketDB is database that provide powerfull mechanism to manage collections of objects. 
 It is accessiable through REST api. Test example is run at Heroku.
 
+Some examples you could find at [tests](https://github.com/gimlet2/backetdb/blob/master/src/test/java/com/restmonkeys/backetdb/aq/APITest.java)
+
 ## API
 
 ```
