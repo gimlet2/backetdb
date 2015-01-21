@@ -99,7 +99,7 @@ public class Application {
 
     private void setCommonResponseHeaders(Response res) {
         res.type(APPLICATION_JSON);
-        Long a = 4L;
+        Byte a = 4;
     }
 
 }
