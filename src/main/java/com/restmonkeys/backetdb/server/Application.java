@@ -96,6 +96,7 @@ public class Application {
 
     private void setCommonResponseHeaders(Response res) {
         res.type(APPLICATION_JSON);
+        Integer b = 5;
     }
 
 }
