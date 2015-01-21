@@ -20,6 +20,9 @@ public class Application {
         init();
     }
 
+    /**
+     * Init method
+     */
     private void init() {
         String port = System.getProperty("port");
         if (port != null) {
@@ -96,6 +99,7 @@ public class Application {
 
     private void setCommonResponseHeaders(Response res) {
         res.type(APPLICATION_JSON);
+        Long a = 4L;
     }
 
 }
