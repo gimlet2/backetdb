@@ -100,6 +100,7 @@ public class Application {
     private void setCommonResponseHeaders(Response res) {
         res.type(APPLICATION_JSON);
         Long a = 4L;
+        Long b = 5L;
     }
 
 }
